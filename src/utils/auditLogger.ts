@@ -1,3 +1,4 @@
+import localforage from 'localforage';
 import { AccessLogEntry, UserProfile } from '../types';
 
 const LOGS_STORAGE_KEY = 'rtt_audit_logs_cache_v1';
@@ -14,21 +15,21 @@ export function getDeviceInfo(): string {
   return 'Navegador Web';
 }
 
-export function getLocalCachedLogs(): AccessLogEntry[] {
+export async function getLocalCachedLogs(): Promise<AccessLogEntry[]> {
   try {
-    const raw = localStorage.getItem(LOGS_STORAGE_KEY);
+    const raw = await localforage.getItem<string>(LOGS_STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
 }
 
-export function saveLocalCachedLog(entry: AccessLogEntry): void {
+export async function saveLocalCachedLog(entry: AccessLogEntry): Promise<void> {
   try {
-    const list = getLocalCachedLogs();
+    const list = await getLocalCachedLogs();
     list.unshift(entry);
     if (list.length > 500) list.length = 500;
-    localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(list));
+    await localforage.setItem(LOGS_STORAGE_KEY, JSON.stringify(list));
   } catch (e) {
     console.warn('Erro ao salvar log local:', e);
   }
@@ -48,7 +49,7 @@ export async function logAccessEvent(acao: string, user: UserProfile, detalhes?:
     dispositivo,
   };
 
-  saveLocalCachedLog(entry);
+  await saveLocalCachedLog(entry);
 
   try {
     await fetch('/api/logs', {
@@ -209,7 +210,8 @@ export async function fetchServerLogs(email: string, password?: string) {
     const data = await res.json();
     return data;
   } catch (e) {
-    return { success: false, logs: getLocalCachedLogs(), usersList: [], message: 'Erro ao buscar dados.' };
+    const localLogs = await getLocalCachedLogs();
+    return { success: false, logs: localLogs, usersList: [], message: 'Erro ao buscar dados.' };
   }
 }
 
@@ -250,7 +252,7 @@ export async function downloadLogsTxt(email: string, password?: string, fallback
     document.body.removeChild(a);
   } else {
     // fallback
-    const logsToExport = fallbackLogs.length > 0 ? fallbackLogs : getLocalCachedLogs();
+    const logsToExport = fallbackLogs.length > 0 ? fallbackLogs : await getLocalCachedLogs();
     const lines = [
       '================================================================================',
       'RTT CHECK - RELATÓRIO DE AUDITORIA E RASTREIO DE ACESSOS ONLINE',

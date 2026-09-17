@@ -2,6 +2,54 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously } from 'firebase/auth';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+
+let db: any = null;
+let auth: any = null;
+try {
+  if (fs.existsSync('./firebase-applet-config.json')) {
+    const firebaseConfig = JSON.parse(fs.readFileSync('./firebase-applet-config.json', 'utf-8'));
+    const firebaseApp = initializeApp(firebaseConfig);
+    db = getFirestore(firebaseApp);
+    auth = getAuth(firebaseApp);
+    signInAnonymously(auth).catch(err => console.error('Firebase Auth:', err));
+  }
+} catch (e) {
+  console.error('Firebase init error', e);
+}
+
+// Sincronização inicial do Firestore para o local
+async function syncFromFirestore() {
+  if (!db) return;
+  try {
+    const usersSnap = await getDoc(doc(db, 'system', 'users'));
+    if (usersSnap.exists()) {
+      fs.writeFileSync(USERS_PATH, JSON.stringify(usersSnap.data(), null, 2), 'utf-8');
+    }
+    const adminsSnap = await getDoc(doc(db, 'system', 'admins'));
+    if (adminsSnap.exists()) {
+      fs.writeFileSync(ADMINS_PATH, JSON.stringify(adminsSnap.data().list || [], null, 2), 'utf-8');
+    }
+    const emailSnap = await getDoc(doc(db, 'system', 'email_exceptions'));
+    if (emailSnap.exists()) {
+      fs.writeFileSync(EMAIL_EXCEPTIONS_PATH, JSON.stringify(emailSnap.data().list || [], null, 2), 'utf-8');
+    }
+    const logsSnap = await getDoc(doc(db, 'system', 'logs'));
+    if (logsSnap.exists()) {
+      fs.writeFileSync(JSON_LOG_PATH, JSON.stringify(logsSnap.data().list || [], null, 2), 'utf-8');
+    }
+  } catch (err) {
+    console.error('Erro ao sincronizar do Firestore:', err);
+  }
+}
+
+function syncToFirestore(col: string, data: any) {
+  if (!db) return;
+  setDoc(doc(db, 'system', col), data).catch(err => console.error('Erro ao salvar no Firestore:', err));
+}
+
 
 const PORT = 3000;
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -33,6 +81,7 @@ function saveEmailExceptions(list: string[]): void {
   try {
     const unique = Array.from(new Set(list.map((e) => String(e).trim().toLowerCase()).filter(Boolean)));
     fs.writeFileSync(EMAIL_EXCEPTIONS_PATH, JSON.stringify(unique, null, 2), 'utf-8');
+    syncToFirestore('email_exceptions', { list: unique });
   } catch (err) {
     console.warn('Erro ao salvar email_exceptions.json:', err);
   }
@@ -125,6 +174,7 @@ function loadUsers(): Record<string, StoredUser> {
 function saveUsers(users: Record<string, StoredUser>): void {
   try {
     fs.writeFileSync(USERS_PATH, JSON.stringify(users, null, 2), 'utf-8');
+    syncToFirestore('users', users);
   } catch (err) {
     console.warn('Erro ao salvar users.json:', err);
   }
@@ -157,6 +207,7 @@ function loadLogs(): ServerAccessLog[] {
 function saveLogs(logs: ServerAccessLog[]): void {
   try {
     fs.writeFileSync(JSON_LOG_PATH, JSON.stringify(logs, null, 2), 'utf-8');
+    syncToFirestore('logs', { list: logs.slice(0, 1000) });
   } catch (err) {
     console.warn('Erro ao salvar logs.json:', err);
   }
@@ -196,6 +247,7 @@ function saveAdminEmails(list: string[]): void {
   try {
     const unique = Array.from(new Set([SUPER_ADMIN_EMAIL, ...list.map((e) => String(e).trim().toLowerCase())]));
     fs.writeFileSync(ADMINS_PATH, JSON.stringify(unique, null, 2), 'utf-8');
+    syncToFirestore('admins', { list: unique });
   } catch (err) {
     console.warn('Erro ao salvar admins.json:', err);
   }
@@ -938,4 +990,4 @@ async function startServer() {
   });
 }
 
-startServer();
+syncFromFirestore().then(() => startServer());

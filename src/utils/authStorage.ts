@@ -1,15 +1,25 @@
+import localforage from 'localforage';
 import { UserProfile } from '../types';
 
 const ACTIVE_USER_KEY = 'rtt_active_operator_v1';
 const RECENT_USERS_KEY = 'rtt_recent_operators_v1';
+const USERS_STORE_KEY = 'rtt_users_store_v1';
+const ADMIN_LOGS_STORE_KEY = 'rtt_admin_logs_store_v1';
+
+// Configure localforage to prefer IndexedDB for offline persistence
+localforage.config({
+  name: 'RTTCheckDB',
+  storeName: 'rtt_check_data',
+  description: 'Armazena os dados de operadores e senhas offline'
+});
 
 const DEFAULT_USERS: UserProfile[] = [
   { nome: 'Paulo Matos', email: 'paulo.matos@rttshop.com.br', cargo: 'Controle de Qualidade' },
 ];
 
-export function getActiveUser(): UserProfile | null {
+export async function getActiveUser(): Promise<UserProfile | null> {
   try {
-    const raw = localStorage.getItem(ACTIVE_USER_KEY);
+    const raw = await localforage.getItem<string>(ACTIVE_USER_KEY);
     if (!raw) return null;
     return JSON.parse(raw);
   } catch {
@@ -17,22 +27,22 @@ export function getActiveUser(): UserProfile | null {
   }
 }
 
-export function setActiveUser(user: UserProfile | null): void {
+export async function setActiveUser(user: UserProfile | null): Promise<void> {
   try {
     if (!user) {
-      localStorage.removeItem(ACTIVE_USER_KEY);
+      await localforage.removeItem(ACTIVE_USER_KEY);
     } else {
-      localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(user));
-      saveUserToHistory(user);
+      await localforage.setItem(ACTIVE_USER_KEY, JSON.stringify(user));
+      await saveUserToHistory(user);
     }
   } catch (e) {
     console.warn('Erro ao salvar operador:', e);
   }
 }
 
-export function getRecentUsers(): UserProfile[] {
+export async function getRecentUsers(): Promise<UserProfile[]> {
   try {
-    const raw = localStorage.getItem(RECENT_USERS_KEY);
+    const raw = await localforage.getItem<string>(RECENT_USERS_KEY);
     if (!raw) return [];
     
     const list: UserProfile[] = JSON.parse(raw);
@@ -44,13 +54,13 @@ export function getRecentUsers(): UserProfile[] {
   }
 }
 
-export function saveUserToHistory(user: UserProfile): void {
+export async function saveUserToHistory(user: UserProfile): Promise<void> {
   try {
-    const list = getRecentUsers();
+    const list = await getRecentUsers();
     // Evita duplicatas pelo nome
     const filtered = list.filter((u) => u.nome.trim().toLowerCase() !== user.nome.trim().toLowerCase());
     const updated = [user, ...filtered].slice(0, 5); // guarda até 5 recentes
-    localStorage.setItem(RECENT_USERS_KEY, JSON.stringify(updated));
+    await localforage.setItem(RECENT_USERS_KEY, JSON.stringify(updated));
   } catch (e) {
     console.warn('Erro ao salvar histórico de operadores:', e);
   }

@@ -6,14 +6,28 @@ import { DewPointScreen } from './components/DewPointScreen';
 import { ShellWearScreen } from './components/ShellWearScreen';
 import { LoginScreen } from './components/LoginScreen';
 import { AdminLogsScreen } from './components/AdminLogsScreen';
+import { PWAInstallButton } from './components/PWAInstallButton';
 import { ScreenId, UserProfile } from './types';
 import { getActiveUser, setActiveUser } from './utils/authStorage';
 import { getAdminSession } from './utils/auditLogger';
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => getActiveUser());
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('home');
   const [adminAuth, setAdminAuth] = useState<{ email: string; pass: string } | null>(() => getAdminSession());
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Initialize async storage
+  useEffect(() => {
+    let isMounted = true;
+    getActiveUser().then(user => {
+      if (isMounted) {
+        setCurrentUser(user);
+        setIsInitializing(false);
+      }
+    });
+    return () => { isMounted = false; };
+  }, []);
 
   // Suporte à navegação do botão Voltar do Android / Navegador
   useEffect(() => {
@@ -86,12 +100,26 @@ export default function App() {
 
   const subtitle = getScreenSubtitle();
 
+  if (isInitializing) {
+    return (
+      <main className="min-h-[100dvh] w-full flex items-center justify-center p-3 sm:p-5 relative bg-[#f0f2f5]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-[#8b0000] rounded-full animate-spin"></div>
+          <span className="text-sm font-bold text-slate-500">Iniciando RTT Check...</span>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-[100dvh] w-full flex items-center justify-center p-3 sm:p-5">
+    <main className="min-h-[100dvh] w-full flex items-center justify-center p-3 sm:p-5 relative">
       <div
         id="app-card-container"
         className="w-full max-w-[430px] bg-white rounded-2xl shadow-xl shadow-slate-200/70 border border-slate-200/60 p-5 flex flex-col relative my-auto transition-all duration-200"
       >
+        <div className="absolute top-4 right-4 z-50">
+          <PWAInstallButton />
+        </div>
         {!currentUser ? (
           <LoginScreen onLoginSuccess={handleLoginSuccess} />
         ) : (

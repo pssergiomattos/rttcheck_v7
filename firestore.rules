@@ -2,60 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if false;
-    }
-
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isSuperAdmin() {
-      return isSignedIn() && request.auth.token.email == 'paulo.matos@rttshop.com.br';
-    }
-
-    function isAdmin() {
-      return isSuperAdmin() || (
-        isSignedIn() && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
-      );
-    }
-
-    function incoming() { return request.resource.data; }
-    function existing() { return resource.data; }
-
-    function isValidUser(data) {
-      return data.email is string && data.email.size() <= 100 &&
-             data.nome is string && data.nome.size() <= 100 &&
-             data.cargo is string && data.cargo.size() <= 100 &&
-             data.createdAt is string &&
-             (!('isAdmin' in data) || data.isAdmin is bool);
-    }
-
-    match /users/{userId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming()) && incoming().email == request.auth.token.email && (!('isAdmin' in incoming()) || incoming().isAdmin == false);
-      allow update: if isSignedIn() && (
-        (request.auth.uid == userId && incoming().diff(existing()).affectedKeys().hasOnly(['lastLoginAt'])) ||
-        isAdmin()
-      );
-      allow delete: if isAdmin();
-    }
-
-    match /emailExceptions/{exceptionId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin();
-    }
-
-    match /accessLogs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isAdmin() && incoming().timestamp is number;
-      allow delete: if isAdmin();
-    }
-    
-    match /inspections/{inspectionId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
+      allow read, write: if request.auth != null;
     }
   }
 }

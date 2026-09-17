@@ -14,7 +14,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const [nome, setNome] = useState('');
   const [cargo, setCargo] = useState<string>('Controle de Qualidade');
   
-  const [recentUsers] = useState<UserProfile[]>(() => getRecentUsers());
+  const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
+  
+  useEffect(() => {
+    let isMounted = true;
+    getRecentUsers().then(users => {
+      if (isMounted) setRecentUsers(users);
+    });
+    return () => { isMounted = false; };
+  }, []);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   
