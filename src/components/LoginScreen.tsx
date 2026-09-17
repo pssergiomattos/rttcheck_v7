@@ -131,33 +131,30 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
       <div className="flex-1 overflow-y-auto px-1 pb-4">
         {recentUsers.length > 0 && (
-          <div className="mb-5">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1">
-              Acessos Recentes
+          <div className="mb-6">
+            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1">
+              Acessos Recentes neste aparelho
             </h3>
-            <div className="flex flex-col gap-2 px-1">
+            <div className="flex gap-2 overflow-x-auto pb-2 px-1 snap-x no-scrollbar">
               {recentUsers.map((user, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => handleSelectRecent(user)}
-                  className={`w-full bg-slate-50 border rounded-lg p-2.5 flex items-center gap-3 transition-all hover:bg-slate-100 ${
+                  className={`snap-start shrink-0 flex items-center gap-2 border rounded-lg py-1.5 px-3 transition-all ${
                     email.toLowerCase() === (user.email || '').toLowerCase()
-                      ? 'border-[#8b0000] shadow-sm bg-red-50/50'
-                      : 'border-slate-200'
+                      ? 'border-[#8b0000] bg-red-50 text-[#8b0000]'
+                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#8b0000] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${
+                    email.toLowerCase() === (user.email || '').toLowerCase() ? 'bg-[#8b0000] text-white' : 'bg-slate-200 text-slate-600'
+                  }`}>
                     {user.nome.charAt(0).toUpperCase()}
                   </div>
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="text-[13px] font-bold text-slate-700 truncate">
-                      {user.nome}
-                    </p>
-                    <p className="text-[10px] text-slate-500 truncate font-medium mt-0.5">
-                      {user.cargo}
-                    </p>
-                  </div>
+                  <span className="text-[11px] font-bold whitespace-nowrap">
+                    {user.nome.split(' ')[0]}
+                  </span>
                 </button>
               ))}
             </div>

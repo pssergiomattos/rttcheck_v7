@@ -33,12 +33,14 @@ export function setActiveUser(user: UserProfile | null): void {
 export function getRecentUsers(): UserProfile[] {
   try {
     const raw = localStorage.getItem(RECENT_USERS_KEY);
-    if (!raw) return DEFAULT_USERS;
+    if (!raw) return [];
+    
     const list: UserProfile[] = JSON.parse(raw);
-    if (!Array.isArray(list) || list.length === 0) return DEFAULT_USERS;
+    if (!Array.isArray(list) || list.length === 0) return [];
+    
     return list;
   } catch {
-    return DEFAULT_USERS;
+    return [];
   }
 }
 
