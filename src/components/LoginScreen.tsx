@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Lock, ArrowRight, User, Briefcase, ChevronDown, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, Briefcase, ChevronDown, AlertCircle } from 'lucide-react';
 import { UserProfile, CARGOS_DISPONIVEIS } from '../types';
 import { getRecentUsers, setActiveUser } from '../utils/authStorage';
 import { logAccessEvent, checkUserRegistration } from '../utils/auditLogger';
@@ -112,66 +112,63 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="w-full flex flex-col h-full bg-white relative pt-2 pb-2">
-      <div className="flex flex-col items-center text-center mb-6">
-        <div className="w-44 h-24 flex items-center justify-center mb-1">
+    <div className="w-full flex flex-col h-full bg-white relative">
+      <div className="flex flex-col items-center text-center mb-6 mt-4">
+        <div className="w-48 h-24 flex items-center justify-center mb-2">
           <img
             src="./logo-192.png"
             alt="REMA TIP TOP"
             className="max-w-full max-h-full object-contain select-none"
           />
         </div>
-        <h1 className="text-3xl font-black text-[#8b0000] tracking-tight mb-0.5">
+        <h1 className="text-[28px] font-black text-[#800000] tracking-tight mb-1">
           RTT Check
         </h1>
-        <p className="text-xs font-bold text-slate-500 tracking-wide uppercase">
-          Controle de Qualidade
+        <p className="text-[13px] font-bold text-[#446688] tracking-wide uppercase">
+          IDENTIFICAÇÃO DO OPERADOR
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-1 pb-4">
-        {recentUsers.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1">
-              Acessos Recentes neste aparelho
-            </h3>
-            <div className="flex gap-2 overflow-x-auto pb-2 px-1 snap-x no-scrollbar">
-              {recentUsers.map((user, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleSelectRecent(user)}
-                  className={`snap-start shrink-0 flex items-center gap-2 border rounded-lg py-1.5 px-3 transition-all ${
-                    email.toLowerCase() === (user.email || '').toLowerCase()
-                      ? 'border-[#8b0000] bg-red-50 text-[#8b0000]'
-                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${
-                    email.toLowerCase() === (user.email || '').toLowerCase() ? 'bg-[#8b0000] text-white' : 'bg-slate-200 text-slate-600'
-                  }`}>
-                    {user.nome.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="text-[11px] font-bold whitespace-nowrap">
-                    {user.nome.split(' ')[0]}
-                  </span>
-                </button>
-              ))}
+      <div className="flex-1 overflow-y-auto pb-4">
+        <form onSubmit={handleSubmit} className="px-5 py-6 bg-white border border-slate-200 rounded-[14px] shadow-sm mx-1.5">
+          
+          {recentUsers.length > 0 && (
+            <div className="mb-6 border-b border-slate-100 pb-5">
+              <label className="block text-[13px] font-bold text-[#6688aa] uppercase tracking-wide mb-3">
+                OPERADORES RECENTES:
+              </label>
+              <div className="flex gap-2 overflow-x-auto snap-x no-scrollbar">
+                {recentUsers.map((user, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleSelectRecent(user)}
+                    className={`snap-start shrink-0 flex items-center gap-2 border rounded-xl py-1.5 px-3.5 transition-all ${
+                      email.toLowerCase() === (user.email || '').toLowerCase()
+                        ? 'border-slate-300 bg-white text-[#800000]'
+                        : 'border-slate-200 text-[#113355] hover:bg-slate-50'
+                    }`}
+                  >
+                    <User className={`w-4 h-4 ${email.toLowerCase() === (user.email || '').toLowerCase() ? 'text-[#800000]' : 'text-[#800000]'}`} />
+                    <span className="text-[13px] font-bold whitespace-nowrap text-[#113355]">
+                      {user.nome}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 px-1">
           {errorMsg && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-medium flex items-center gap-2">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 font-medium flex items-center gap-2 mb-4">
               <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-[13px] font-bold text-[#113355] mb-1.5">
                 E-mail Corporativo <span className="text-red-600">*</span>
               </label>
               <div className="relative">
@@ -180,21 +177,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Seu e-mail da empresa"
-                  className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 font-medium focus:ring-2 focus:ring-[#8b0000] outline-none"
+                  placeholder="Informe seu e-mail corporativo"
+                  className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-[10px] text-[14px] text-slate-800 font-medium focus:ring-2 focus:ring-[#8b0000] focus:border-[#8b0000] outline-none"
                   required
                 />
               </div>
             </div>
 
             {isNewRegistration && (
-              <div className="animate-fade-in p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3 mt-2">
-                <p className="text-xs text-slate-600 font-medium text-center">
-                  Primeiro acesso detectado. Preencha seus dados:
-                </p>
+              <div className="animate-fade-in space-y-4 pt-1">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Nome Completo <span className="text-red-600">*</span>
+                  <label className="block text-[13px] font-bold text-slate-800 mb-1.5">
+                    Nome do Operador <span className="text-red-600">*</span>
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -202,14 +196,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                       type="text"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
-                      placeholder="Seu nome"
-                      className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 focus:ring-2 focus:ring-[#8b0000] outline-none"
+                      placeholder="Seu nome completo"
+                      className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-[13px] text-slate-800 focus:ring-2 focus:ring-[#8b0000] outline-none"
                       required
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  <label className="block text-[13px] font-bold text-slate-800 mb-1.5">
                     Função / Setor <span className="text-red-600">*</span>
                   </label>
                   <div className="relative">
@@ -217,7 +211,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                     <select
                       value={cargo}
                       onChange={(e) => setCargo(e.target.value)}
-                      className="w-full pl-9 pr-9 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 focus:ring-2 focus:ring-[#8b0000] outline-none appearance-none"
+                      className="w-full pl-9 pr-9 py-2.5 bg-white border border-slate-300 rounded-lg text-[13px] text-slate-800 focus:ring-2 focus:ring-[#8b0000] outline-none appearance-none"
                     >
                       {CARGOS_DISPONIVEIS.map((opcao) => (
                         <option key={opcao} value={opcao}>{opcao}</option>
@@ -230,7 +224,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
             )}
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-[13px] font-bold text-[#113355] mb-1.5">
                 Senha de Acesso <span className="text-red-600">*</span>
               </label>
               <div className="relative">
@@ -239,31 +233,41 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Sua senha"
-                  className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 font-medium focus:ring-2 focus:ring-[#8b0000] outline-none"
+                  placeholder="Digite sua senha"
+                  className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-[10px] text-[14px] text-slate-800 font-medium focus:ring-2 focus:ring-[#8b0000] outline-none"
                   required
                 />
               </div>
             </div>
+            
+            <div className="flex items-center gap-2.5 pt-2 pb-5">
+              <input 
+                type="checkbox" 
+                id="manter-conectado" 
+                className="w-4 h-4 text-[#0066cc] rounded border-slate-300 focus:ring-[#0066cc] cursor-pointer"
+                defaultChecked
+              />
+              <label htmlFor="manter-conectado" className="text-sm font-bold text-[#113355] cursor-pointer select-none">
+                Manter conectado neste dispositivo
+              </label>
+            </div>
           </div>
 
-          <div className="pt-3">
+          <div className="pt-2">
             <button
               type="submit"
               disabled={loading || !email.trim() || !password.trim()}
-              className="w-full py-3.5 px-4 bg-[#8b0000] hover:bg-[#720000] active:scale-[0.98] text-white font-bold text-sm tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:active:scale-100"
+              className="w-full h-12 bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.03)] transition-all disabled:opacity-50"
             >
-              {loading ? (
-                <span>AGUARDE...</span>
-              ) : (
-                <>
-                  <span>ACESSAR SISTEMA</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+              <span className="sr-only">Acessar</span>
             </button>
           </div>
         </form>
+
+        <div className="mt-8 text-center text-[13px] font-bold leading-relaxed">
+          <p className="text-[#335577]">Desenvolvido por Paulo Matos</p>
+          <p className="text-[#6688aa] font-medium">Técnico de Controle de Qualidade</p>
+        </div>
       </div>
     </div>
   );
