@@ -40,8 +40,11 @@ function saveEmailExceptions(list: string[]): void {
 
 export function isEmailAllowed(email: string): { allowed: boolean; reason?: string } {
   const cleanEmail = (email || '').trim().toLowerCase();
-  if (!cleanEmail || !cleanEmail.includes('@')) {
-    return { allowed: false, reason: 'Informe um endereço de e-mail corporativo válido.' };
+  
+  // Validação básica de formato: exige @ e um domínio com ponto
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+    return { allowed: false, reason: 'Informe um formato de e-mail válido (ex: nome@empresa.com.br).' };
   }
 
   // 1. Checa os domínios corporativos padrão (@rttshop.com.br e @rematiptop.com.br)

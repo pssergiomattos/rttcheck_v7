@@ -23,7 +23,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   // Auto-detect if user needs registration
   useEffect(() => {
     const cleanEmail = email.trim().toLowerCase();
-    if (cleanEmail && cleanEmail.includes('@') && cleanEmail.includes('.')) {
+    const isValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+    
+    if (isValidFormat) {
       const timer = setTimeout(async () => {
         try {
           const res = await checkUserRegistration(cleanEmail);
@@ -59,6 +61,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       setErrorMsg('Preencha o e-mail e a senha.');
       return;
     }
+    
+    const isValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!isValidFormat) {
+      setErrorMsg('Informe um formato de e-mail válido (ex: nome@empresa.com.br).');
+      return;
+    }
+    
     if (isNewRegistration && !nome.trim()) {
       setErrorMsg('Preencha o nome do técnico para o primeiro acesso.');
       return;
@@ -104,7 +113,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="w-full flex flex-col h-full bg-white relative pt-2 pb-2">
-      {/* Logo idêntica à HomeScreen */}
       <div className="flex flex-col items-center text-center mb-6">
         <div className="w-44 h-24 flex items-center justify-center mb-1">
           <img
@@ -123,30 +131,30 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
       <div className="flex-1 overflow-y-auto px-1 pb-4">
         {recentUsers.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">
+          <div className="mb-5">
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1">
               Acessos Recentes
             </h3>
-            <div className="flex gap-3 overflow-x-auto pb-2 px-1 snap-x no-scrollbar">
+            <div className="flex flex-col gap-2 px-1">
               {recentUsers.map((user, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => handleSelectRecent(user)}
-                  className={`snap-start shrink-0 w-32 bg-slate-50 border-2 rounded-xl p-3 flex flex-col items-center gap-2 transition-all hover:bg-slate-100 ${
+                  className={`w-full bg-slate-50 border rounded-lg p-2.5 flex items-center gap-3 transition-all hover:bg-slate-100 ${
                     email.toLowerCase() === (user.email || '').toLowerCase()
-                      ? 'border-[#8b0000] shadow-sm bg-red-50'
-                      : 'border-slate-100'
+                      ? 'border-[#8b0000] shadow-sm bg-red-50/50'
+                      : 'border-slate-200'
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-full bg-[#8b0000] text-white flex items-center justify-center font-bold text-sm shadow-inner">
+                  <div className="w-8 h-8 rounded-full bg-[#8b0000] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
                     {user.nome.charAt(0).toUpperCase()}
                   </div>
-                  <div className="w-full text-center">
-                    <p className="text-xs font-bold text-slate-700 truncate w-full">
-                      {user.nome.split(' ')[0]}
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="text-[13px] font-bold text-slate-700 truncate">
+                      {user.nome}
                     </p>
-                    <p className="text-[9px] text-slate-500 truncate w-full font-medium mt-0.5">
+                    <p className="text-[10px] text-slate-500 truncate font-medium mt-0.5">
                       {user.cargo}
                     </p>
                   </div>
