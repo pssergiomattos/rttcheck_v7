@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Lock, User, Briefcase, ChevronDown, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, Briefcase, ChevronDown, AlertCircle, ArrowRight, CheckCircle } from 'lucide-react';
 import { UserProfile, CARGOS_DISPONIVEIS } from '../types';
 import { getRecentUsers, setActiveUser } from '../utils/authStorage';
 import { logAccessEvent, checkUserRegistration } from '../utils/auditLogger';
@@ -182,6 +182,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   required
                 />
               </div>
+              {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim().toLowerCase()) && (
+                <div className="mt-2.5 p-2.5 bg-[#eefaf2] border border-[#ade2c2] rounded-lg text-[13px] text-[#0a7a42] font-bold flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 shrink-0" />
+                  <span>E-mail corporativo válido.</span>
+                </div>
+              )}
             </div>
 
             {isNewRegistration && (
@@ -253,13 +259,20 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 pb-1">
             <button
               type="submit"
               disabled={loading || !email.trim() || !password.trim()}
-              className="w-full h-12 bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.03)] transition-all disabled:opacity-50"
+              className="w-full py-4 px-4 bg-[#800000] hover:bg-[#660000] shadow-[0_4px_10px_rgba(128,0,0,0.3)] text-white font-black text-[15px] rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:active:scale-100 active:scale-[0.98]"
             >
-              <span className="sr-only">Acessar</span>
+              {loading ? (
+                <span>AGUARDE...</span>
+              ) : (
+                <>
+                  <span>ENTRAR NO SISTEMA</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           </div>
         </form>
