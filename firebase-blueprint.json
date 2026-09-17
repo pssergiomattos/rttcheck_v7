@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered operator or admin",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 100 },
+        "nome": { "type": "string", "maxLength": 100 },
+        "cargo": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string" },
+        "lastLoginAt": { "type": "string" },
+        "isAdmin": { "type": "boolean" }
+      },
+      "required": ["email", "nome", "cargo", "createdAt"]
+    },
+    "EmailException": {
+      "title": "Email Exception",
+      "description": "Allowed email or domain",
+      "type": "object",
+      "properties": {
+        "emailOrDomain": { "type": "string", "maxLength": 100 },
+        "addedBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["emailOrDomain", "addedBy", "createdAt"]
+    },
+    "AccessLog": {
+      "title": "Access Log",
+      "description": "Audit log for tracking admin actions",
+      "type": "object",
+      "properties": {
+        "dataHora": { "type": "string" },
+        "nome": { "type": "string" },
+        "email": { "type": "string" },
+        "cargo": { "type": "string" },
+        "acao": { "type": "string" },
+        "detalhes": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["dataHora", "email", "acao", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles"
+    },
+    "emailExceptions": {
+      "schema": { "$ref": "#/entities/EmailException" },
+      "description": "Stores allowed emails and domains"
+    },
+    "accessLogs": {
+      "schema": { "$ref": "#/entities/AccessLog" },
+      "description": "Stores audit logs"
+    }
+  }
+}

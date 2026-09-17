@@ -1,0 +1,58 @@
+{
+  "paulo.matos@rttshop.com.br": {
+    "email": "paulo.matos@rttshop.com.br",
+    "nome": "Paulo Matos",
+    "cargo": "Controle de Qualidade",
+    "passwordHash": "rema2026",
+    "createdAt": "2026-09-16T20:04:27.684Z",
+    "lastLoginAt": "2026-09-17T02:49:33.413Z"
+  },
+  "mairon.campos@rttshop.com.br": {
+    "email": "mairon.campos@rttshop.com.br",
+    "nome": "Mairon Campos",
+    "cargo": "Gerência",
+    "passwordHash": "rema2026",
+    "createdAt": "2026-09-17T00:22:36.996Z",
+    "lastLoginAt": "2026-09-17T00:22:36.996Z"
+  },
+  "carlos.magno@rttshop.com.br": {
+    "email": "carlos.magno@rttshop.com.br",
+    "nome": "Carlos Magno",
+    "cargo": "Liderança",
+    "passwordHash": "rema2026",
+    "createdAt": "2026-09-17T01:36:04.069Z",
+    "lastLoginAt": "2026-09-17T01:36:04.069Z"
+  },
+  "joao.marcos@rttshop.com.br": {
+    "email": "joao.marcos@rttshop.com.br",
+    "nome": "Joao Marcos",
+    "cargo": "Inspetor",
+    "passwordHash": "rema2026",
+    "createdAt": "2026-09-17T01:36:24.888Z",
+    "lastLoginAt": "2026-09-17T01:51:43.318Z"
+  },
+  "jorge.amado@rttshop.com.br": {
+    "email": "jorge.amado@rttshop.com.br",
+    "nome": "Jorge Amado",
+    "cargo": "Supervisão",
+    "passwordHash": "rema2026",
+    "createdAt": "2026-09-17T01:40:00.304Z",
+    "lastLoginAt": "2026-09-17T01:40:00.304Z"
+  },
+  "rogerio.reis@rttshop.com.br": {
+    "email": "rogerio.reis@rttshop.com.br",
+    "nome": "Rogerio Reis",
+    "cargo": "Supervisão",
+    "passwordHash": "rema2026",
+    "createdAt": "2026-09-17T01:46:16.779Z",
+    "lastLoginAt": "2026-09-17T01:46:16.779Z"
+  },
+  "mano.man@rttshop.com.br": {
+    "email": "mano.man@rttshop.com.br",
+    "nome": "Mano Man",
+    "cargo": "Técnico de Revestimento",
+    "passwordHash": "123456",
+    "createdAt": "2026-09-17T02:39:22.257Z",
+    "lastLoginAt": "2026-09-17T02:39:22.257Z"
+  }
+}
